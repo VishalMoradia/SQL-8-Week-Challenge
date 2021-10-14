@@ -112,3 +112,44 @@ GROUP BY customer_id;
 Solution: 
 
 ![solution](https://picc.io/kAxKBkl.PNG)
+
+### 8. How many pizzas were delivered that had both exclusions and extras?
+
+```sql
+SELECT customer_id,
+SUM(CASE WHEN exclusions IS NOT NULL AND extras IS NOT NULL THEN 1 ELSE 0 END) AS pizza_with_both
+FROM customer_orders_new c 
+JOIN runner_orders_new r 
+ON c.order_id = r.order_id AND exclusions <> ' ' 
+  AND extras <> ' '
+WHERE cancellation NOT IN ('Restaurant Cancellation' , 'Customer Cancellation') 
+GROUP BY customer_id
+```
+
+### 9. What was the total volume of pizzas ordered for each hour of the day?
+
+```sql
+SELECT 
+  DATE_PART('HOUR', order_time) AS hour_of_day, 
+  COUNT(order_id) AS pizza_count
+FROM customer_orders_new
+GROUP BY DATE_PART('HOUR', order_time)
+ORDER BY DATE_PART('HOUR', order_time);
+```
+
+Solution:
+
+![solution](https://picc.io/n4Nfkyu.PNG)
+
+
+### 10. What was the volume of orders for each day of the week?
+
+```sql
+SELECT EXTRACT(dow FROM order_time), COUNT(order_id) AS total_orders
+FROM customer_orders_new
+GROUP BY EXTRACT(dow FROM order_time);
+```
+
+Solution:
+
+![solution](https://picc.io/S1M2S-J.PNG)
