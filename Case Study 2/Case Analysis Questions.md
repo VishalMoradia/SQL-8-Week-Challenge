@@ -66,3 +66,49 @@ Solution:
 
 
 ### 5. How many Vegetarian and Meatlovers were ordered by each customer?
+
+```sql
+SELECT customer_id, 
+      SUM(CASE WHEN pizza_id = 1 THEN 1 ELSE 0 END) AS meatlovers,
+      SUM(CASE WHEN pizza_id = 2 THEN 1 ELSE 0 END) AS vegetarians
+FROM pizza_runner.customer_orders 
+GROUP BY customer_id
+ORDER BY customer_id
+```
+
+Solution:
+
+![solution](https://picc.io/9zxT9as.PNG)
+
+
+### 6. What was the maximum number of pizzas delivered in a single order?
+
+```sql
+SELECT order_id, COUNT(pizza_id) 
+FROM customer_orders_new
+GROUP BY order_id
+ORDER BY COUNT(pizza_id) DESC
+LIMIT 1;
+```
+
+Solution:
+
+![solution](https://picc.io/xqMSqwh.PNG)
+
+
+### 7. For each customer, how many delivered pizzas had at least 1 change and how many had no changes?
+
+```sql 
+SELECT customer_id, 
+SUM(CASE WHEN exclusions <> ' ' OR extras <> ' ' THEN 1 ELSE 0 END) AS at_least_one_change,
+SUM(CASE WHEN extras = ' '  AND exclusions = ' ' THEN 1 ELSE 0 END) AS no_change
+FROM customer_orders_new c
+JOIN runner_orders_new r 
+ON c.order_id = r.order_id
+WHERE cancellation NOT IN ('Restaurant Cancellation' , 'Customer Cancellation')
+GROUP BY customer_id;
+```
+
+Solution: 
+
+![solution](https://picc.io/kAxKBkl.PNG)
